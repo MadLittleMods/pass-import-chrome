@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('assert');
 const path = require('path');
-const { parsePasswordCsvFromChrome } = require('../import-from-chrome.js');
+const { parsePasswordCsvFromChrome } = require('../lib/import-from-chrome.js');
 
 // Turn Map and Set into plain objects and arrays
 function jsonReplacer(key, value) {
@@ -15,10 +15,12 @@ function jsonReplacer(key, value) {
 }
 
 test('parsePasswordCsvFromChrome', async () => {
-  const { hostToPassEntryMap } = await parsePasswordCsvFromChrome(
+  const { baseHostToPassEntryMap } = await parsePasswordCsvFromChrome(
     path.resolve(__dirname, './dummy-chrome-passwords.csv'),
   );
-  const hostToPassEntryBareObject = JSON.parse(JSON.stringify(hostToPassEntryMap, jsonReplacer, 2));
+  const hostToPassEntryBareObject = JSON.parse(
+    JSON.stringify(baseHostToPassEntryMap, jsonReplacer, 2),
+  );
 
   assert.deepStrictEqual(hostToPassEntryBareObject, {
     localhost: [
