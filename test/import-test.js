@@ -1,20 +1,10 @@
 'use strict';
 
 const test = require('node:test');
-const assert = require('assert');
-const path = require('path');
+const assert = require('node:assert');
+const path = require('node:path');
+const { jsonReplacer } = require('../lib/json-serialization.js');
 const { parsePasswordCsvFromChrome } = require('../lib/import-from-chrome.js');
-
-// Turn Map and Set into plain objects and arrays
-function jsonReplacer(key, value) {
-  if (value instanceof Map) {
-    return Object.fromEntries(value.entries());
-  } else if (value instanceof Set) {
-    return Array.from(value.values());
-  } else {
-    return value;
-  }
-}
 
 test('parsePasswordCsvFromChrome', async () => {
   const { baseHostToPassEntryMap } = await parsePasswordCsvFromChrome(
