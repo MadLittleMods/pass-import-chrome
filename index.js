@@ -5,7 +5,7 @@ const { parseArgs } = require('node:util');
 const chalk = require('chalk');
 const {
   parsePasswordCsvFromChrome,
-  resolvePathConflictsInPassEntryMap,
+  resolvePathConflictsWithHeuristicsInPassEntryMap,
 } = require('./lib/import-from-chrome.js');
 
 const { values: argValues } = parseArgs({
@@ -60,24 +60,52 @@ async function importFromChromeToPass() {
       process.exit();
     });
 
-    const g = resolvePathConflictsInPassEntryMap(baseHostToPassEntryMap);
-
-    let conflict = g.next();
+    const resolveConflictsGenerator =
+      resolvePathConflictsWithHeuristicsInPassEntryMap(baseHostToPassEntryMap);
+    let conflict = resolveConflictsGenerator.next();
+    let previousPassEntry;
     while (!conflict.done) {
-      const { passEntry, path: conflictingPath } = conflict.value;
-
+      const { passEntry, conflictingPath } = conflict.value;
       const previousAlias = aliasMap.get(passEntry.login);
-      let isPreviousAliasDefined = !previousAlias || previousAlias === '';
 
-      const providedAlias = await new Promise((resolve, _reject) => {
+      let workingOnSameEntry = previousPassEntry === passEntry;
+
+      let suggestedAlias;
+      if (!workingOnSameEntry) {
+        suggestedAlias = previousAlias;
+      }
+
+      // Ask the user for an alias to resolve the conflict
+      let providedAlias = await new Promise((resolve, _reject) => {
         readline.question(
           `Duplicate/conflicting path detected at ${chalk.blue(conflictingPath)} for ${chalk.green(passEntry.login)}. ` +
-            `Please provide an${isPreviousAliasDefined ? ' different' : ''} alias for this entry (personal, work, etc): `,
+            `\n    Please provide an${workingOnSameEntry ? ' different' : ''} alias for this entry (personal, work, etc)` +
+            `${suggestedAlias ? ` (suggested: ${chalk.green.bold(suggestedAlias)})` : ''}: `,
           resolve,
         );
       });
+      // If the user just hits enter, use the suggested alias
+      if (!providedAlias && suggestedAlias) {
+        providedAlias = suggestedAlias;
+      }
 
-      conflict = g.next(providedAlias);
+      // Warn if the previous alias is being overwritten
+      if (
+        previousAlias &&
+        // Don't warn if we're not just spinning our wheels on the same entry looking
+        // for something available
+        !workingOnSameEntry
+      ) {
+        console.warn(
+          `Overwriting previous alias ${chalk.yellow(previousAlias)} with ${chalk.green(providedAlias)}`,
+        );
+      }
+      // Update the alias map with the provided alias
+      aliasMap.set(passEntry.login, providedAlias);
+
+      // Pass the provided alias back to the generator and get the next conflict
+      conflict = resolveConflictsGenerator.next(providedAlias);
+      previousPassEntry = passEntry;
     }
 
     const pathToPassEntryMap = conflict.value;
