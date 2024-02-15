@@ -22,7 +22,7 @@ const {
 // generate-pass-entry-json-from-chrome-csv.js ... | jq .` but does work with `npm run
 // generate-pass-entry-json-from-chrome-csv --silent -- ... | jq .`
 //
-chalk.supportsColor = true;
+// chalk.supportsColor = true;
 
 const { values: argValues } = parseArgs({
   strict: true,
