@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "generate-pass-entry-json-from-chrome-csv": "node generate-pass-entry-json-from-chrome-csv.js",
     "lint": "eslint \"**/*.js\"",
     "test": "node --test"
   },
