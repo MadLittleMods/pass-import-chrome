@@ -5,7 +5,7 @@ const { parseArgs } = require('node:util');
 const chalk = require('chalk');
 const {
   parsePasswordCsvFromChrome,
-  resolvePathConflictsWithHeuristicsInPassEntryMap,
+  resolvePathConflictsInPassEntryMap,
 } = require('./lib/import-from-chrome.js');
 
 const { values: argValues } = parseArgs({
@@ -31,37 +31,40 @@ if (argValues.help) {
   process.exit(0);
 }
 
+function printAliasMap(aliasMap) {
+  console.log(
+    `\n\n=========== Updated ${chalk.yellow('login-aliases.json')} ===========\n`,
+    JSON.stringify(Object.fromEntries(aliasMap.entries()), null, 2),
+    `\n=========== ^^^ Updated ${chalk.yellow('login-aliases.json')} (copy to your own aliases file) ^^^ ===========`,
+  );
+}
+
 async function importFromChromeToPass() {
   const { baseHostToPassEntryMap } = await parsePasswordCsvFromChrome(argValues['chrome-csv']);
+
+  const aliasMap = new Map();
+  if (argValues['login-alias-json']) {
+    const loginAliasJson = require(path.resolve(argValues['login-alias-json']));
+    for (const [login, alias] of Object.entries(loginAliasJson)) {
+      aliasMap.set(login, alias);
+    }
+  }
 
   const readline = require('node:readline').createInterface({
     input: process.stdin,
     output: process.stdout,
   });
   try {
-    const aliasMap = new Map();
-    if (argValues['login-alias-json']) {
-      const loginAliasJson = require(path.resolve(argValues['login-alias-json']));
-      for (const [login, alias] of Object.entries(loginAliasJson)) {
-        aliasMap.set(login, alias);
-      }
-    }
-
     // When someone tries to exit early with Ctrl+C, print the current state of the
     // alias map so they can use their current progress next time if they choose to copy
     // it back to their aliases file.
     readline.on('SIGINT', function () {
-      console.log(
-        `\n\n=========== Updated ${chalk.yellow('login-aliases.json')} ===========\n`,
-        JSON.stringify(Object.fromEntries(aliasMap.entries()), null, 2),
-        `\n=========== ^^^ Updated ${chalk.yellow('login-aliases.json')} (copy to your own aliases file) ^^^ ===========`,
-      );
+      printAliasMap(aliasMap);
       // eslint-disable-next-line n/no-process-exit
       process.exit();
     });
 
-    const resolveConflictsGenerator =
-      resolvePathConflictsWithHeuristicsInPassEntryMap(baseHostToPassEntryMap);
+    const resolveConflictsGenerator = resolvePathConflictsInPassEntryMap(baseHostToPassEntryMap);
     let conflict = resolveConflictsGenerator.next();
     let previousPassEntry;
     while (!conflict.done) {
@@ -78,7 +81,7 @@ async function importFromChromeToPass() {
       // Ask the user for an alias to resolve the conflict
       let providedAlias = await new Promise((resolve, _reject) => {
         readline.question(
-          `Duplicate/conflicting path detected at ${chalk.blue(conflictingPath)} for ${chalk.green(passEntry.login)}. ` +
+          `Duplicate/conflicting path detected at ${chalk.blue(conflictingPath)} for ${chalk.green(passEntry.login)} with URLs ${[...passEntry.urls].map((url) => chalk.grey(url)).join(', ')}. ` +
             `\n    Please provide an${workingOnSameEntry ? ' different' : ''} alias for this entry (personal, work, etc)` +
             `${suggestedAlias ? ` (suggested: ${chalk.green.bold(suggestedAlias)})` : ''}: `,
           resolve,
@@ -92,6 +95,8 @@ async function importFromChromeToPass() {
       // Warn if the previous alias is being overwritten
       if (
         previousAlias &&
+        // Only warn if the alias is actually different
+        previousAlias !== providedAlias &&
         // Don't warn if we're not just spinning our wheels on the same entry looking
         // for something available
         !workingOnSameEntry
@@ -110,6 +115,7 @@ async function importFromChromeToPass() {
 
     const pathToPassEntryMap = conflict.value;
     console.log('pathToPassEntryMap', pathToPassEntryMap);
+    printAliasMap(aliasMap);
   } finally {
     readline.close();
   }
