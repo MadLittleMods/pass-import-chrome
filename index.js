@@ -62,22 +62,22 @@ async function importFromChromeToPass() {
 
     const g = resolvePathConflictsInPassEntryMap(baseHostToPassEntryMap);
 
-    let conflict = await g.next();
+    let conflict = g.next();
     while (!conflict.done) {
       const { passEntry, path: conflictingPath } = conflict.value;
 
-      const alias = aliasMap.get(passEntry.login);
-      let isAliasDefined = !alias || alias === '';
+      const previousAlias = aliasMap.get(passEntry.login);
+      let isPreviousAliasDefined = !previousAlias || previousAlias === '';
 
-      conflict = await g.next(
-        new Promise((resolve, _reject) => {
-          readline.question(
-            `Duplicate/conflicting path detected at ${chalk.blue(conflictingPath)} for ${chalk.green(passEntry.login)}. ` +
-              `Please provide an${isAliasDefined ? ' different' : ''} alias for this entry (personal, work, etc): `,
-            resolve,
-          );
-        }),
-      );
+      const providedAlias = await new Promise((resolve, _reject) => {
+        readline.question(
+          `Duplicate/conflicting path detected at ${chalk.blue(conflictingPath)} for ${chalk.green(passEntry.login)}. ` +
+            `Please provide an${isPreviousAliasDefined ? ' different' : ''} alias for this entry (personal, work, etc): `,
+          resolve,
+        );
+      });
+
+      conflict = g.next(providedAlias);
     }
 
     const pathToPassEntryMap = conflict.value;
