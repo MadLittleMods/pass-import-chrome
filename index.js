@@ -1,3 +1,5 @@
+'use strict';
+
 const path = require('node:path');
 const {
   parsePasswordCsvFromChrome,
@@ -17,17 +19,19 @@ async function importFromChromeToPass() {
     // TODO
     const aliasMap = new Map();
 
-    const g = resolvePathConflictsInPassEntryMap(baseHostToPassEntryMap, aliasMap);
+    const g = resolvePathConflictsInPassEntryMap(baseHostToPassEntryMap);
 
     let conflict = await g.next();
     while (!conflict.done) {
-      const { passEntry, path: conflictingPath, alias } = conflict.value;
+      const { passEntry, path: conflictingPath } = conflict.value;
+
+      const alias = aliasMap.get(passEntry.login);
       let isAliasDefined = !alias || alias === '';
 
       conflict = await g.next(
-        new Promise((resolve, reject) => {
+        new Promise((resolve, _reject) => {
           readline.question(
-            `Duplicate/conflicting path detected at ${conflictingPath}. ` +
+            `Duplicate/conflicting path detected at ${conflictingPath} for ${passEntry.login}. ` +
               `Please provide an${isAliasDefined ? ' different' : ''} alias for this entry (personal, work, etc): `,
             resolve,
           );
