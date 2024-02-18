@@ -43,6 +43,33 @@ test('parsePasswordCsvFromChrome', async () => {
         comments: 'test different user on same domain',
       },
     ],
+    '127.0.0.1:8000': [
+      {
+        password: 'password',
+        login: 'admin',
+        username: 'admin',
+        urls: ['http://127.0.0.1:8000/settings/'],
+        comments: ' test IP and port',
+      },
+    ],
+    '192.168.0.1': [
+      {
+        password: 'password',
+        login: 'router-admin',
+        username: 'router-admin',
+        urls: ['http://192.168.0.1/'],
+        comments: 'test IP',
+      },
+    ],
+    '4.3.2.1': [
+      {
+        password: 'password',
+        login: '',
+        username: '',
+        urls: ['http://4.3.2.1/wormhole'],
+        comments: 'no username',
+      },
+    ],
     'nvidia.com': [
       {
         password: 'password',
@@ -222,6 +249,27 @@ test('resolvePathConflictsInPassEntryMap', async () => {
       username: 'johnny',
       urls: ['http://localhost:3000/login'],
       comments: 'test port number',
+    },
+    '127.0.0.1:8000': {
+      comments: ' test IP and port',
+      login: 'admin',
+      password: 'password',
+      urls: ['http://127.0.0.1:8000/settings/'],
+      username: 'admin',
+    },
+    '192.168.0.1': {
+      comments: 'test IP',
+      login: 'router-admin',
+      password: 'password',
+      urls: ['http://192.168.0.1/'],
+      username: 'router-admin',
+    },
+    '4.3.2.1': {
+      comments: 'no username',
+      login: '',
+      password: 'password',
+      urls: ['http://4.3.2.1/wormhole'],
+      username: '',
     },
     'localhost:3000/gitlab': {
       password: 'password',

@@ -1,6 +1,6 @@
 # Google Chrome to `pass` Password Store Importer
 
-If you're unfamiliar with `pass`, see this [introductory video](https://www.youtube.com/watch?v=FhwsfH2TpFA).
+If you're unfamiliar with [zx2c4's `pass`](https://www.passwordstore.org/), see this [introductory video](https://www.youtube.com/watch?v=FhwsfH2TpFA).
 
 ```sh
 node generate-pass-entry-json-from-chrome-csv.js --chrome-csv test/dummy-chrome-passwords.csv
@@ -11,6 +11,10 @@ to resolve conflicts.
 
 ```sh
 node generate-pass-entry-json-from-chrome-csv.js --chrome-csv test/dummy-chrome-passwords.csv --login-alias-json login-aliases.json
+```
+
+```sh
+node import-pass-entry-json.js --pass-entry-json chrome-pass-entries.json
 ```
 
 Example `pass` entry output from this script:
@@ -59,8 +63,8 @@ FORCE_COLOR=1 node generate-pass-entry-json-from-chrome-csv.js --chrome-csv test
 ```
 
 When using `npm run <command>` instead of calling the scripts directly, `--silent` is
-necessary to suppress the `npm` run command output to `stdout` which messes with data
-we're trying to pipe.
+necessary to suppress the default `npm` run command output to `stdout` which messes with
+data we're trying to pipe.
 
 ```sh
 npm run generate-pass-entry-json-from-chrome-csv --silent -- --chrome-csv test/dummy-chrome-passwords.csv --login-alias-json login-aliases.json

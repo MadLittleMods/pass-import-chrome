@@ -3,7 +3,6 @@
 const assert = require('node:assert');
 const path = require('node:path');
 const { parseArgs } = require('node:util');
-const chalk = require('chalk');
 const { jsonReplacer } = require('./lib/json-serialization.js');
 const {
   parsePasswordCsvFromChrome,
@@ -41,7 +40,7 @@ const { values: argValues } = parseArgs({
 
 if (argValues.help) {
   console.log(
-    `Usage: npm start -- --chrome-csv <path-to-chrome-csv> --login-alias-json <path-to-login-alias-json>`,
+    `Usage: node ${path.basename(process.argv[1])} -- --chrome-csv <path-to-chrome-csv> --login-alias-json <path-to-login-alias-json>`,
   );
   // eslint-disable-next-line n/no-process-exit
   process.exit(0);
