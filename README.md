@@ -1,8 +1,8 @@
 # Google Chrome to `pass` Password Store Importer
 
-If you're unfamiliar with [zx2c4's `pass`](https://www.passwordstore.org/), see this [introductory video](https://www.youtube.com/watch?v=FhwsfH2TpFA).
-
 This project is a tool to import your Google Chrome passwords into `pass` password store.
+
+If you're unfamiliar with [zx2c4's `pass`](https://www.passwordstore.org/), see this [introductory video](https://www.youtube.com/watch?v=FhwsfH2TpFA).
 
 ## Setup
 
@@ -22,14 +22,19 @@ $ npm install
 
 Or you can simply visit `chrome://password-manager/settings` and **Export passwords** -> **Download file**
 
+This will give you a `Chrome Passwords.csv` file.
+
 ### Step #2: Generate `pass` entry JSON from Chrome CSV
+
+(feel free just to try it out with the dummy data in `test/dummy-chrome-passwords.csv`)
 
 ```sh
 FORCE_COLOR=1 node generate-pass-entry-json-from-chrome-csv.js --chrome-csv test/dummy-chrome-passwords.csv > ./chrome-pass-entries.json
 ```
 
 You can also provide `--login-alias-json` file to preload the list of suggested aliases
-to resolve conflicts.
+to resolve conflicts. The script will also spit out an updated alias list when you're
+finished or decide to bail early to use in the next run.
 
 ```sh
 FORCE_COLOR=1 node generate-pass-entry-json-from-chrome-csv.js --chrome-csv test/dummy-chrome-passwords.csv --login-alias-json login-aliases.json  > ./chrome-pass-entries.json
@@ -77,7 +82,7 @@ still works) or your own alias like `personal`, `work`, etc in the file name
 ### Why two separate commands?
 
 So you can first generate the `chrome-pass-entries.json` file and manually review it before
-adding it to your password store.
+importing everything to your password store.
 
 ### Piping/composing with other commands
 
