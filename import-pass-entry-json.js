@@ -4,6 +4,7 @@ const assert = require('node:assert');
 const path = require('node:path');
 const { parseArgs, promisify } = require('node:util');
 const exec = promisify(require('child_process').exec);
+const chalk = require('chalk');
 
 const { values: argValues } = parseArgs({
   strict: true,
@@ -26,10 +27,11 @@ if (argValues.help) {
 
 function serializePassEntry(passEntry) {
   assert(passEntry.password, 'Missing required password field');
-  assert(passEntry.login, 'Missing required login field');
 
   let serializedEntry = `${passEntry.password}\n`;
-  serializedEntry += `login: ${passEntry.login}\n`;
+  if (passEntry.login) {
+    serializedEntry += `login: ${passEntry.login}\n`;
+  }
   if (passEntry.username) {
     serializedEntry += `username: ${passEntry.username}\n`;
   }
@@ -70,14 +72,14 @@ async function importPassEntryJson() {
   console.log(
     `Here is the commit hash of the pass repo before we do anything: ${commitHashBeforeImport}\n` +
       `If you want to revert this import, you can run the following command:\n` +
-      `\`\`\`\n` +
-      `pass git reset --hard ${commitHashBeforeImport}\n` +
-      `\`\`\`\n` +
+      chalk.grey(`\`\`\`\n` + `pass git reset --hard ${commitHashBeforeImport}\n` + `\`\`\`\n`) +
       `If you've already pushed and synchronized the repo remotely, you can gracefully revert this import by undoing all of the changes in a new single commit:\n` +
-      `\`\`\`\n` +
-      `pass git revert --no-commit ${commitHashBeforeImport}..HEAD\n` +
-      `pass git commit\n` +
-      `\`\`\`\n`,
+      chalk.grey(
+        `\`\`\`\n` +
+          `pass git revert --no-commit ${commitHashBeforeImport}..HEAD\n` +
+          `pass git commit\n` +
+          `\`\`\`\n`,
+      ),
   );
 
   console.log(
