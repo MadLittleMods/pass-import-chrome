@@ -1,4 +1,5 @@
 node_modules/
+.vscode/
 
 *.json
 !package.json
