@@ -2,22 +2,49 @@
 
 If you're unfamiliar with [zx2c4's `pass`](https://www.passwordstore.org/), see this [introductory video](https://www.youtube.com/watch?v=FhwsfH2TpFA).
 
+This project is a tool to import your Google Chrome passwords into `pass` password store.
+
+## Setup
+
+Install [Node.js](https://nodejs.org/) (tested with Node.js `v20.11.0`)
+
 ```sh
-node generate-pass-entry-json-from-chrome-csv.js --chrome-csv test/dummy-chrome-passwords.csv
+$ git clone TODO
+$ cd pass-import-chrome
+$ npm install
+```
+
+## Tool usage
+
+### Step #1: Export Chrome passwords to a CSV file
+
+**Chrome** -> **Settings** -> **Autofill and passwords** -> **Google password manager** -> **Settings** -> **Export passwords** -> **Download file**
+
+Or you can simply visit `chrome://password-manager/settings` and **Export passwords** -> **Download file**
+
+### Step #2: Generate `pass` entry JSON from Chrome CSV
+
+```sh
+FORCE_COLOR=1 node generate-pass-entry-json-from-chrome-csv.js --chrome-csv test/dummy-chrome-passwords.csv > ./chrome-pass-entries.json
 ```
 
 You can also provide `--login-alias-json` file to preload the list of suggested aliases
 to resolve conflicts.
 
 ```sh
-node generate-pass-entry-json-from-chrome-csv.js --chrome-csv test/dummy-chrome-passwords.csv --login-alias-json login-aliases.json
+FORCE_COLOR=1 node generate-pass-entry-json-from-chrome-csv.js --chrome-csv test/dummy-chrome-passwords.csv --login-alias-json login-aliases.json  > ./chrome-pass-entries.json
 ```
+
+### Step #3: Import `pass` entry JSON into `pass` password store
 
 ```sh
 node import-pass-entry-json.js --pass-entry-json chrome-pass-entries.json
 ```
 
-Example `pass` entry output from this script:
+Example `pass` entry output from this script below. There isn't a standard format for
+`pass` entries but this tries to follow the conventions of the `pass` community and
+should work with [`browserpass`](https://github.com/browserpass/browserpass-extension)
+or [`passff`](https://github.com/passff/passff) browser extensions.
 
 ```
 <password>
@@ -30,6 +57,8 @@ url: <url>
 comments: <comments>
 ```
 
+The script will also print out some git commands to revert the import process if you see anything wrong.
+
 ## FAQ
 
 ### How is this different from the alternative projects?
@@ -39,7 +68,7 @@ Both of the alternative projects put your login/email/username
 (depending on your threat model) but is also a meta data leak. This project aims to only
 include the host name (so
 [`browserpass`](https://github.com/browserpass/browserpass-extension?tab=readme-ov-file#organizing-password-store)
-still works) or your own alias like `work`, `personal`, etc in the file name
+still works) or your own alias like `personal`, `work`, etc in the file name
 (ex. `mail.google.com/personal.gpg`)
 
 - https://github.com/roddhjav/pass-import
@@ -64,8 +93,8 @@ FORCE_COLOR=1 node generate-pass-entry-json-from-chrome-csv.js --chrome-csv test
 
 When using `npm run <command>` instead of calling the scripts directly, `--silent` is
 necessary to suppress the default `npm` run command output to `stdout` which messes with
-data we're trying to pipe.
+data we're trying to pipe. Arguments for the script itself should be passed after `--` (see below).
 
 ```sh
-npm run generate-pass-entry-json-from-chrome-csv --silent -- --chrome-csv test/dummy-chrome-passwords.csv --login-alias-json login-aliases.json
+npm run generate-pass-entry-json-from-chrome-csv --silent -- --chrome-csv test/dummy-chrome-passwords.csv
 ```
