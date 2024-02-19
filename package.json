@@ -14,7 +14,8 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "^4.1.2",
-    "fast-csv": "^5.0.0"
+    "fast-csv": "^5.0.0",
+    "tldjs": "^2.3.1"
   },
   "devDependencies": {
     "eslint": "^8.56.0",

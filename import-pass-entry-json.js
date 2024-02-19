@@ -53,7 +53,7 @@ async function insertPassEntry(entryPath, passEntry) {
   assert(passEntry, 'Missing required passEntry argument');
   const serializedEntry = serializePassEntry(passEntry);
 
-  const asdf = await exec(
+  await exec(
     `echo "${serializedEntry.replace(`"`, `\\"`)}" | pass insert --multiline "${entryPath}"`,
     {
       // Exit if we reach a y/n prompt that we can't answer
