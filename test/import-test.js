@@ -49,7 +49,7 @@ test('parsePasswordCsvFromChrome', async () => {
         login: 'admin',
         username: 'admin',
         urls: ['http://127.0.0.1:8000/settings/'],
-        comments: ' test IP and port',
+        comments: 'test IP and port',
       },
     ],
     '192.168.0.1': [
@@ -251,7 +251,7 @@ test('resolvePathConflictsInPassEntryMap', async () => {
       comments: 'test port number',
     },
     '127.0.0.1:8000': {
-      comments: ' test IP and port',
+      comments: 'test IP and port',
       login: 'admin',
       password: 'password',
       urls: ['http://127.0.0.1:8000/settings/'],
