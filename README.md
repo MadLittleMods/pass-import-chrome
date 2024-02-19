@@ -1,15 +1,16 @@
 # Google Chrome to `pass` Password Store Importer
 
-This project is a tool to import your Google Chrome passwords into `pass` password store.
+This project is a tool to import your Google Chrome passwords into `pass` password
+store. The scripts are fairly simple and should be easy to modify to fit your needs.
 
-If you're unfamiliar with [zx2c4's `pass`](https://www.passwordstore.org/), see this [introductory video](https://www.youtube.com/watch?v=FhwsfH2TpFA).
+If you're unfamiliar with [zx2c4's `pass` (Password Store)](https://www.passwordstore.org/), see this [introductory video](https://www.youtube.com/watch?v=FhwsfH2TpFA).
 
 ## Setup
 
 Install [Node.js](https://nodejs.org/) (tested with Node.js `v20.11.0`)
 
 ```sh
-$ git clone TODO
+$ git clone git@github.com:MadLittleMods/pass-import-chrome.git
 $ cd pass-import-chrome
 $ npm install
 ```
@@ -18,13 +19,16 @@ $ npm install
 
 ### Step #1: Export Chrome passwords to a CSV file
 
-**Chrome** -> **Settings** -> **Autofill and passwords** -> **Google password manager** -> **Settings** -> **Export passwords** -> **Download file**
+Instructions: **Chrome** -> **Settings** -> **Autofill and passwords** -> **Google password manager** -> **Settings** -> **Export passwords** -> **Download file**
 
 Or you can simply visit `chrome://password-manager/settings` and **Export passwords** -> **Download file**
 
 This will give you a `Chrome Passwords.csv` file.
 
 ### Step #2: Generate `pass` entry JSON from Chrome CSV
+
+This is an interactive script that will prompt you to resolve conflicts and provide
+aliases where there are multiple logins for the same domain.
 
 (feel free just to try it out with the dummy data in `test/dummy-chrome-passwords.csv`)
 
