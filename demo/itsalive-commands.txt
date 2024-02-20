@@ -9,8 +9,9 @@ personal
 work
 ## Import chrome-pass-entries.json to pass
 node import-pass-entry-json.js --pass-entry-json chrome-pass-entries.json
+# Action: Copy the `pass git reset ...` command from the output (Ctrl+r to resume itsalive)
 ##@pause
 pass list
 # We can also easily revert the import by copy-pasting from the instructions in the output of the last command
-## Scroll up to the command output and copy-paste the revert and run it
+## Action: Paste and run the revert command
 ##@pause
