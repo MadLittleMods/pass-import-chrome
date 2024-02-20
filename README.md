@@ -5,6 +5,8 @@ store. The scripts are fairly simple and should be easy to modify to fit your ne
 
 If you're unfamiliar with [zx2c4's `pass` (Password Store)](https://www.passwordstore.org/), see this [introductory video](https://www.youtube.com/watch?v=FhwsfH2TpFA).
 
+![Showing off the import process in the terminal (see tool usage below)](https://gist.githubusercontent.com/MadLittleMods/60787453ec9dc9bc5c3277fa0bd97790/raw/9e0c9637dce16b4d26e877233fb235859635f84e/pass-import-chrome-demo.svg)
+
 ## Setup
 
 Install [Node.js](https://nodejs.org/) (tested with Node.js `v20.11.0`)

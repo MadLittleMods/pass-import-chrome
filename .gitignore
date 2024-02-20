@@ -1,8 +1,20 @@
 node_modules/
 .vscode/
 
+# Ignore all JSON by default. This way people can avoid people accidentally committing
+# their chrome-pass-entries.json files
 *.json
 !package.json
 !package-lock.json
 !.eslintrc.json
 !.prettierrc.json
+
+# Ignore all CSV by default. This way people can avoid people accidentally committing
+# their "Chrome Passwords.csv" files
+*.csv
+!test/dummy-chrome-passwords.csv
+
+# Ignore the demo SVG since it can get pretty big and we can just host it in a separate
+# gist instead and it can always be regenerated from the `demo/demo.cast` file (see
+# demo/demo.md for instructions)
+demo/demo.svg

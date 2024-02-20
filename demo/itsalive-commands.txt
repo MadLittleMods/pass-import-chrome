@@ -1,0 +1,16 @@
+asciinema rec demo/demo.cast --overwrite --command="/bin/bash --rcfile <(cat ~/.bashrc; echo -e '\nPS1=\"\033[34mpass-import-chrome\033[00m \033[95m❯\033[00m \"')" --title="pass-import-chrome demo"
+FORCE_COLOR=1 node generate-pass-entry-json-from-chrome-csv.js --chrome-csv test/dummy-chrome-passwords.csv > ./chrome-pass-entries.json
+## Resolve conflicts
+personal-wordpress-blog
+gitlab
+personal (TODO: merge username and email entry)
+personal
+
+work
+## Import chrome-pass-entries.json to pass
+node import-pass-entry-json.js --pass-entry-json chrome-pass-entries.json
+##@pause
+pass list
+# We can also easily revert the import by copy-pasting from the instructions in the output of the last command
+## Scroll up to the command output and copy-paste the revert and run it
+##@pause
