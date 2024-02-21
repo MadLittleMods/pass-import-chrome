@@ -26,7 +26,7 @@ if (argValues.help) {
 }
 
 function serializePassEntry(passEntry) {
-  assert(passEntry.password, 'Missing required password field');
+  assert.strictEqual(typeof passEntry.password, 'string');
 
   let serializedEntry = `${passEntry.password}\n`;
   if (passEntry.login) {
@@ -50,18 +50,35 @@ function serializePassEntry(passEntry) {
   return serializedEntry;
 }
 
+// > To escape the single quote, close the quoting before it, insert the single quote,
+// > and re-open the quoting.
+// >
+// > https://stackoverflow.com/questions/15783701/which-characters-need-to-be-escaped-when-using-bash/20053121#20053121
+//
+// Other answer, https://stackoverflow.com/questions/1250079/how-to-escape-single-quotes-within-single-quoted-strings/1315213#1315213
+function escapeStringForBashCommand(str) {
+  // Use surrounding single quotes around the `serializedEntry` to avoid shell expansion
+  return `'${str.replace(`'`, `'\\''`)}'`;
+}
+
 async function insertPassEntry(entryPath, passEntry) {
   assert(entryPath, 'Missing required path argument');
   assert(passEntry, 'Missing required passEntry argument');
-  const serializedEntry = serializePassEntry(passEntry);
+  try {
+    const serializedEntry = serializePassEntry(passEntry);
 
-  await exec(
-    `echo "${serializedEntry.replace(`"`, `\\"`)}" | pass insert --multiline "${entryPath}"`,
-    {
-      // Exit if we reach a y/n prompt that we can't answer
-      timeout: 1000,
-    },
-  );
+    await exec(
+      `echo ${escapeStringForBashCommand(serializedEntry)} | pass insert --multiline ${escapeStringForBashCommand(entryPath)}`,
+      {
+        // Exit if we reach a y/n prompt that we can't answer
+        timeout: 1000,
+      },
+    );
+  } catch (err) {
+    throw new Error(`Error serializing entry at ${entryPath}`, {
+      cause: err,
+    });
+  }
 }
 
 async function importPassEntryJson() {
